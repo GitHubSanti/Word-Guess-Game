@@ -1,39 +1,7 @@
-	// Out of guesses messages
-	var noMoreGuesses = document.createElement("p");
-	var noMoreGuessesText = document.createTextNode("No more lives! Refresh the page to start over!");
-	noMoreGuesses.setAttribute("class","text-white bg-danger border border-dark rounded p-2");
-	noMoreGuesses.appendChild(noMoreGuessesText);
-	
-	// Button to be used to advance to next city after player has guess city correctly
-	var nextCityButton = document.createElement("button"); // Create a <button> element
-	var nextCitybuttonClicked = false;
-	var nextCityButtonText = document.createTextNode("Next City!"); // Create a text node
-	nextCityButton.setAttribute("type","button");
-	nextCityButton.setAttribute("class","btn btn-success d-block mx-auto border border-dark"); // Set class using bootstrap
-	nextCityButton.setAttribute("id","nextCityButtonID"); // Set id
-	nextCityButton.appendChild(nextCityButtonText); // Append the text to <button>
-
-	// Instuctional message to appear with 'Next City' button 
-	var nextCityMessage1 = document.createElement("p");
-	var nextCityMessage2 = document.createElement("p");
-	var nextCityMessageText1 = document.createTextNode("First click the 'Next City!' button");
-	var nextCityMessageText2 = document.createTextNode("Then press any key to continue playing");
-	nextCityMessage1.setAttribute("class","text-center font-italic bg-light border border-dark rounded")
-	nextCityMessage2.setAttribute("class","text-center font-italic bg-light border border-dark rounded")
-	nextCityMessage1.appendChild(nextCityMessageText1);
-	nextCityMessage2.appendChild(nextCityMessageText2);
-
-	// Button function to determine if 'Next City' button has been clicked
-	function nextCityButtonFunction() {
-	nextCitybuttonClicked = true;
-	return nextCitybuttonClicked;
-}
-	
-	//hangMan Object createded to store values and arrays used throughout the game
 	var hangMan = {
 	iterations: 0,
 	firstKeyPressed: false,
-	cityGuessed: false,
+	cityGuessed: true,
 	playerLives: 15,
 	wins: 0,
 	currentCity: "",
@@ -87,11 +55,28 @@
 	}
 }
 
-	document.onkeyup = function (event) {
-	var userGuess = event.key; // Responsible for picking up key pressed
-	var messageNode = document.getElementById("messages"); // Parent element. Used to delete Next City button and corresponding message
+	// Button to be used to advance to next city
+	var nextCityButton = document.createElement("button"); // Create a <button> element
+	var nextCityButtonText = document.createTextNode("Next City!"); // Create a text node
+	nextCityButton.setAttribute("type","button");
+	nextCityButton.setAttribute("class","btn btn-success d-block mx-auto"); // Set class using bootstrap
+	nextCityButton.setAttribute("id","nextCityButtonID"); // Set id
+	nextCityButton.appendChild(nextCityButtonText); // Append the text to <button>
 
-	// HTML elements to be manipulated
+nextCityButton.onclick = function nextCityButtonFunction() {
+	hangMan.lettersGuessedCorrect.splice(0, hangMan.lettersGuessedCorrect.length);
+	hangMan.lettersGuessedArray.splice(0, hangMan.lettersGuessedArray.length);
+	hangMan.indices.splice(0, hangMan.indices.length);
+
+	hangMan.selectRandomCity();
+	console.log(hangMan.currentCity);
+}
+
+document.onkeyup = function (event) {
+	console.log(hangMan.cityGuessed);
+	// Responsible for picking up key pressed
+	var userGuess = event.key;
+
 	var directionsText = document.getElementById("initialInstructions");
 	var gameScreenText = document.getElementById("gameScreen");
 	var currentCityText = document.getElementById("currentCity");
@@ -109,10 +94,9 @@
 		// Should only happen once to clear instructions first seen
 		// Clears the 'Press and key to get started!' Instructions
 		if ((userGuess !== null)) {
-			
-			// Get rid of initial instructions for the game
+			// Start to initialize the rest of webpage
+			// WILL CONTINUE TO DEVELOP
 			directionsText.textContent = "";
-			document.getElementById("jumbotron").removeChild(document.getElementById("thematicBreak")); // Get rid of thematic break 
 
 			// Provides random city from citiesChoicesArray
 			console.log(hangMan.selectRandomCity());
@@ -123,11 +107,30 @@
 		}
 	}
 
+	if (hangMan.cityGuessed && hangMan.iterations > 0) {
+		console.log("This would be the next word played");
+
+		// Clearing Arrays from previous round. Potential Method??
+		hangMan.lettersGuessedCorrect.splice(0, hangMan.lettersGuessedCorrect.length);
+		hangMan.lettersGuessedArray.splice(0, hangMan.lettersGuessedArray.length);
+		hangMan.indices.splice(0, hangMan.indices.length);
+
+		console.log(hangMan.selectRandomCity());
+		console.log("Length of current City: " + hangMan.currentCity.length);
+
+		// Provide '_' or ' ' for city selected above
+		console.log(hangMan.updateCurrentCityHTML(hangMan.currentCity, currentCityText));
+		hangMan.cityGuessed = false;
+	}
+
+
 	hangMan.iterations++;
 	console.log("Number of iterations " + hangMan.iterations);
 	console.log("Has the current city been guessed? " + hangMan.cityGuessed);
 
 	if (hangMan.firstKeyPressed && hangMan.iterations >= 2 && !hangMan.cityGuessed) {
+		// Responsible for providing city
+
 		// Responsible for updating Letters Guessed array with unique values
 		if (hangMan.isLetter(userGuess)) {
 
@@ -139,15 +142,12 @@
 					hangMan.decreaseLives(playerLivesText);
 					hangMan.lettersGuessedArray.push(userGuess);
 					lettersGuessedText.textContent = hangMan.lettersGuessedArray;
-					
-					if(hangMan.playerLives <= 0) {
-						document.getElementById("outOfLives").appendChild(noMoreGuesses)
-					}
 				}
 
 			} else if (hangMan.currentCity.includes(userGuess) || hangMan.currentCity.includes(userGuess.toUpperCase())) {
+				// console.log("The letter that did pass was: "+userGuess);
 
-				// Uncover letters guessed correctly
+				// CODE TO START UNCOVERING letters
 				for (var i = 0; i < hangMan.currentCity.length; i++) {
 					if (hangMan.currentCity.charAt(i) == userGuess && !hangMan.indices.includes(i)) {
 						console.log(userGuess + " is at the following index " + i);
@@ -170,7 +170,6 @@
 				if (!hangMan.lettersGuessedCorrect.includes("_ ")) {
 					console.log("Congrats you got the city!");
 					hangMan.increaseWins(winsText);
-					hangMan.cityGuessed = true;
 
 					// Removes city from citiesChoicesArray
 					for (var i = 0; i < hangMan.citiesChoicesArray.length; i++) {
@@ -178,31 +177,16 @@
 							hangMan.citiesChoicesArray.splice(i, 1);
 						}
 					}
+					
+					hangMan.cityGuessed = true;
 					console.log("The player has guessed the following city: "+hangMan.cityGuessed);
-					document.getElementById("messages").appendChild(nextCityMessage1); // Append button message to HTML DOC
-					document.getElementById("messages").appendChild(nextCityMessage2); // Append button message to HTML DOC
-					document.getElementById("messages").appendChild(nextCityButton); // Append button to HTML DOC
-					document.getElementById("nextCityButtonID").addEventListener("click", nextCityButtonFunction); // Next city button function onclick
+					
+					document.getElementById("labels").appendChild(nextCityButton); // Append button to HTML DOC
 				}
 			}
 		}
-	}else if (hangMan.cityGuessed && !nextCitybuttonClicked){
-		console.log("Player has not clicked 'Next City' button");
-		alert("First click the green 'Next City' button and then press any key to play the next round!");
-		
-	} else if (hangMan.cityGuessed && nextCitybuttonClicked) {
-		hangMan.cityGuessed = false;
-		nextCitybuttonClicked = false;
-		hangMan.lettersGuessedCorrect.splice(0, hangMan.lettersGuessedCorrect.length);
-		hangMan.lettersGuessedArray.splice(0, hangMan.lettersGuessedArray.length);
-		hangMan.indices.splice(0, hangMan.indices.length);
-
-		hangMan.selectRandomCity();
-		console.log(hangMan.currentCity);
-		console.log(hangMan.updateCurrentCityHTML(hangMan.currentCity, currentCityText));
-		messageNode.removeChild(nextCityButton);
-		messageNode.removeChild(nextCityMessage1);
-		messageNode.removeChild(nextCityMessage2);
+	}else if (hangMan.cityGuessed){
+		console.log("click the Next City to continue playing!");
 	}
 
 }

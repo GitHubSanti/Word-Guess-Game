@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en-us">
+   <head>
+      <meta charset="UTF-8">
+      <title>Word Guessing Game</title>
+      <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+      <!-- JS Reference -->
+      <script src="assets/javascript/game.js"></script>
+   </head>
+   <body class="bg-info">
+      <div class="jumbotron container bg-light pb-1 border border-dark rounded" id="jumbotron">
+         <h1 class="display-2 font-weight-bold">Hangman</h1>
+         <p class="lead">City Dweller Edition</p>
+         <hr class="my-4" id="thematicBreak">
+         <p id="initialInstructions">Objective of the game is to guess the cities! Press any key to get started! Good luck!</p>
+      </div>
+      <div class="container" id="game">
+         <div class="row mx-auto pt-5">
+            <div class="col mt-3" id="outOfLives">
+            </div>
+            <div class="col bg-light border border-dark rounded p-3" id="labels">
+               <p>Current City:</p>
+               <p id="currentCity"></p>
+               <p>Wrong letters guessed:</p>
+               <p id="lettersGuessed"></p>
+               <p id="guessesLeft">Guesses left: 15</p>
+               <p id="wins">Wins: 0</p>
+            </div>
+            <div class="col mt-3" id="messages">
+            </div>
+         </div>
+      </div>
+   </body>
+</html>
